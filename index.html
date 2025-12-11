@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Counter App</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background: #f0f0f0;
+    }
+    h1 {
+      font-size: 3em;
+      margin-bottom: 20px;
+    }
+    .buttons {
+      display: flex;
+      gap: 15px;
+    }
+    button {
+      padding: 15px 25px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:active {
+      transform: scale(0.95);
+    }
+    .increase { background: #4CAF50; color: white; }
+    .decrease { background: #f44336; color: white; }
+    .reset { background: #2196F3; color: white; }
+  </style>
+</head>
+<body>
+  <h1 id="counter">0</h1>
+  <div class="buttons">
+    <button class="increase" onclick="changeCounter(1)">Increase</button>
+    <button class="decrease" onclick="changeCounter(-1)">Decrease</button>
+    <button class="reset" onclick="resetCounter()">Reset</button>
+  </div>
+
+  <script>
+    let count = localStorage.getItem("counter") ? parseInt(localStorage.getItem("counter")) : 0;
+    const counterEl = document.getElementById('counter');
+    counterEl.textContent = count;
+
+    function changeCounter(value) {
+      count += value;
+      counterEl.textContent = count;
+      localStorage.setItem("counter", count);
+    }
+
+    function resetCounter() {
+      count = 0;
+      counterEl.textContent = count;
+      localStorage.setItem("counter", count);
+    }
+
+    // Register service worker
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js");
+    }
+  </script>
+</body>
+</html>
