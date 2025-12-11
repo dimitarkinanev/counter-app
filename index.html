@@ -2,14 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <!-- iOS splash screen and theme -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="apple-touch-icon" href="icon.png">
-<link rel="apple-touch-startup-image" href="icon.png">
-<meta name="apple-mobile-web-app-title" content="Counter">
-<link rel="apple-touch-startup-image" href="splash-1125x2436.png"
-      media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" />
   <!-- Prevent zoom on double-tap -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Counter App</title>
@@ -20,10 +12,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: center; /* ✅ center vertically */
       height: 100vh;
       margin: 0;
-      /* 🎨 Colorful animated gradient background */
       background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fbc2eb, #a6c1ee);
       background-size: 400% 400%;
       animation: gradientBG 15s ease infinite;
@@ -35,11 +26,40 @@
       100% { background-position: 0% 50%; }
     }
 
-    h1 {
-      font-size: 4em;
-      margin-bottom: 30px;
-      color: #0d47a1; /* 🔵 Dark blue counter text */
+    /* Gradient rounded square badge around the counter */
+    .counter-badge {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 28px;
+      background: #ffffff;
+    }
+    .counter-badge::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      padding: 5px; /* 5px border width */
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fbc2eb, #a6c1ee);
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+    }
+
+    /* Counter text fills the square */
+    #counter {
+      font-size: 7em; /* enlarged to nearly fill square */
+      line-height: 1;
+      margin: 0;
+      color: #0d47a1; /* dark blue */
       text-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+      position: relative;
+      z-index: 1;
     }
 
     .buttons {
@@ -59,13 +79,13 @@
       overflow: hidden; /* Needed for ripple */
     }
 
-    /* 🎬 Animation: grow slightly when tapped */
+    /* Grow + glow on tap */
     button:active {
       transform: scale(1.15);
       box-shadow: 0 0 20px rgba(255,255,255,0.6);
     }
 
-    /* Subtle glow effect on hover/tap */
+    /* Subtle glow on hover/tap */
     button:hover {
       box-shadow: 0 0 15px rgba(255,255,255,0.4);
     }
@@ -79,7 +99,6 @@
       background-color: rgba(255, 255, 255, 0.7);
       pointer-events: none;
     }
-
     @keyframes ripple {
       to {
         transform: scale(4);
@@ -93,7 +112,10 @@
   </style>
 </head>
 <body>
-  <h1 id="counter">0</h1>
+  <div class="counter-badge">
+    <h1 id="counter">0</h1>
+  </div>
+
   <div class="buttons">
     <button class="increase" onclick="changeCounter(1)">Increase</button>
     <button class="decrease" onclick="changeCounter(-1)">Decrease</button>
@@ -109,14 +131,14 @@
       count += value;
       counterEl.textContent = count;
       localStorage.setItem("counter", count);
-      triggerHaptic(); // 🔔 haptic feedback
+      triggerHaptic();
     }
 
     function resetCounter() {
       count = 0;
       counterEl.textContent = count;
       localStorage.setItem("counter", count);
-      triggerHaptic(); // 🔔 haptic feedback
+      triggerHaptic();
     }
 
     // Ripple effect logic
@@ -132,9 +154,7 @@
         circle.classList.add("ripple");
 
         const ripple = button.getElementsByClassName("ripple")[0];
-        if (ripple) {
-          ripple.remove();
-        }
+        if (ripple) ripple.remove();
 
         button.appendChild(circle);
       });
@@ -142,9 +162,7 @@
 
     // Haptic feedback (vibration)
     function triggerHaptic() {
-      if (navigator.vibrate) {
-        navigator.vibrate(50); // short vibration
-      }
+      if (navigator.vibrate) navigator.vibrate(50);
     }
 
     // Register service worker for PWA
